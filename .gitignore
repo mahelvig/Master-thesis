@@ -9,6 +9,7 @@ __pycache__/
 *.ZIP
 *.pyc
 *.png
+Storms/
 
 # C extensions
 *.so
