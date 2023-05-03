@@ -6,6 +6,9 @@ __pycache__/
 *.ZIP
 *.tmp
 *.npy
+*.CDF
+*.ZIP
+*.pyc
 
 # C extensions
 *.so
