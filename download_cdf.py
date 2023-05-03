@@ -14,10 +14,10 @@ end_date    = "2016-11-17"
 dates = pd.date_range(start_date,end_date)
 sat_name = ['A','B','C']
 for sat in sat_name:  
-    for i in dates:
-        year = str(i.date().year)
-        month = str(i.date().month).zfill(2)
-        day = str(i.date().day).zfill(2)
+    for element in dates:
+        year = str(element.date().year)
+        month = str(element.date().month).zfill(2)
+        day = str(element.date().day).zfill(2)
 
         file_name = f'SW_PREL_EFI{sat}IDM_2__{year}{month}{day}T000000_{year}{month}{day}T235959_0103.ZIP'
         if os.path.exists(dir_name+'/'+file_name):

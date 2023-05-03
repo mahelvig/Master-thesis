@@ -110,7 +110,7 @@ if __name__ == '__main__':
                 print('Dette er nummer:',j,"  before" if ((j+2)%2==0) else "  after")
                 df_finished.to_feather(f'storm_data/Storms/Baseline_{"before" if ((j+2)%2==0) else "after"}_{str(start_year_baseline[j])}_{"0" if start_month_baseline[j] <10 else ""}{start_month_baseline[j]}_sat_{sat}')
 
-    elif quiet_days:
+    if quiet_days:
          for i, sat in enumerate(sat_name):
             
             input_list   = [sat,2016,11,16,2016,11,17]
@@ -119,14 +119,14 @@ if __name__ == '__main__':
             df_finished.to_feather(f'storm_data/Storms/quiet_days_sat_{sat}')
             
 
-    else:
-        for i, sat in enumerate(sat_name):
-            for j in range(len(start_year)):
+    
+    for i, sat in enumerate(sat_name):
+        for j in range(len(start_year)):
 
-                input_list   = [sat,start_year[j],start_month[j],start_day[j],end_year[j],end_month[j],end_day[j]]
+            input_list   = [sat,start_year[j],start_month[j],start_day[j],end_year[j],end_month[j],end_day[j]]
 
-                obj = prosjekt(input_list)
-                df_finished = obj.combine_df()
-                # df_finished.to_feather(f'master/storm_data/Storms/all_data_sat_{sat}')
-                df_finished.to_feather(f'storm_data/Storms/{str(start_year[j])}_{"0" if start_month[j] <10 else ""}{start_month[j]}_sat_{sat}')
+            obj = prosjekt(input_list)
+            df_finished = obj.combine_df()
+            # df_finished.to_feather(f'master/storm_data/Storms/all_data_sat_{sat}')
+            df_finished.to_feather(f'storm_data/Storms/{str(start_year[j])}_{"0" if start_month[j] <10 else ""}{start_month[j]}_sat_{sat}')
 
