@@ -489,7 +489,7 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
     file_names_dst = ['2015_June.txt','2015_December.txt','2017_September.txt','2018_August.txt']
     from read_txt_omni import readfile
     df,df2 = readfile(dir_dst+file_names_dst[ax_num])
-    ax3 = ax[1].twinx()
+    ax3 = ax[0].twinx()
     ax3.plot(df2.index, df2['SYM/H_INDEX']*-1, ls='solid',color='black',zorder=1)
     ax3.set_yticklabels([])  
     ax3.set_ylim(-100,400)  
@@ -599,12 +599,12 @@ def full_orbit_plotter(name,storm=False):
     # df_resampled    = dfA.groupby('Orbit_number')[['M_i_eff','Timestamp','M_i_eff_tbt_model' ,'MLT']].median(numeric_only=False)
     # df_resampled_night  = dfA.groupby('Orbit_number')[['M_i_eff','Timestamp','M_i_eff_tbt_model' ,'MLT']].median(numeric_only=False)
 
-    mid_time   = '2016-11-17 00:00:00'
+    mid_time   = 1
     
 
     num_orbits = df_orbits['Orbit_number'].nunique()
     print(num_orbits)
-    test_orbit = int((num_orbits +12)/2) 
+    test_orbit = int((num_orbits -12)/2) 
     print(test_orbit)
     single_full_orbit   = df_orbits[df_orbits['Orbit_number'] == test_orbit]
 
@@ -620,11 +620,11 @@ def full_orbit_plotter(name,storm=False):
 
     plt.figure(3)
     plt.plot(single_full_orbit['Timestamp'],single_full_orbit['M_i_eff'], color = 'black',  )
-    plt.plot(dayside_orbit['Timestamp'],dayside_orbit['M_i_eff'], color = 'tab:red',  label = f'Dayside    MLT:{mlt_day:2.0f}')
-    plt.plot(ngtside_orbit['Timestamp'],ngtside_orbit['M_i_eff'], color = 'tab:blue',  label = f'Nightside  MLT:{mlt_ngt:2.0f}')
+    plt.plot(dayside_orbit['Timestamp'],dayside_orbit['M_i_eff'], color = 'tab:blue',  label = f'Dayside    MLT:{mlt_day:2.0f}')
+    plt.plot(ngtside_orbit['Timestamp'],ngtside_orbit['M_i_eff'], color = 'tab:red',  label = f'Nightside  MLT:{mlt_ngt:2.0f}')
     plt.ylabel(r'Effective Ion Mass [u]')
     plt.xlabel(r'Time [UT]')
-    plt.legend(loc = 'lower right')
+    plt.legend(loc = 'best')
     plt.axhline(y = 16, color = 'black', ls = '--',linewidth=1)
     plt.gca().locator_params(axis="y", integer=True, tight=True)
     plt.gca().set_facecolor('#EBEBEB')
@@ -636,7 +636,7 @@ def full_orbit_plotter(name,storm=False):
     # plt.gcf().autofmt_xdate()
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     if not storm:
-        plt.title(f'Plot of one full orbit by Swarm A a random day '+f'({single_full_orbit["Timestamp"].dt.date[test_orbit]})')
+        plt.title(f'Plot of one full orbit by Swarm A a quiet day '+f'({single_full_orbit["Timestamp"].dt.date[test_orbit]})')
         plt.savefig(f'storm_data/Plots/Quiet orbit - Quiet full orbit' +f'({single_full_orbit["Timestamp"].dt.date[test_orbit]}).png')
 
     else:
@@ -684,19 +684,19 @@ if __name__ == '__main__':
     #     plt.close()
 ###
 
-    for i, element in enumerate([june_dst_min, december_dst_min, september_dst_min, august_dst_min]):
-        plt.rcParams.update({'font.size': 20})
-        fig, ax = plt.subplots(1,2,figsize=(15,10))
-        plt.subplots_adjust( wspace=0.1)
-        # plt.tight_layout() 
-        # If statement to make sure dawn/dusk for December storm is included
-        if i == 1:
-            plot_same_plot(file_names=name_list[i], dst_min=element, ax_num = i, dawn_dusk = True)        
-        else:
-            plot_same_plot(file_names=name_list[i], dst_min=element, ax_num = i, )
-        # plt.subplot_tool()
-        # plt.show()
-        plt.close()
+    # for i, element in enumerate([june_dst_min, december_dst_min, september_dst_min, august_dst_min]):
+    #     plt.rcParams.update({'font.size': 20})
+    #     fig, ax = plt.subplots(1,2,figsize=(15,10))
+    #     plt.subplots_adjust( wspace=0.1)
+    #     # plt.tight_layout() 
+    #     # If statement to make sure dawn/dusk for December storm is included
+    #     if i == 1:
+    #         plot_same_plot(file_names=name_list[i], dst_min=element, ax_num = i, dawn_dusk = True)        
+    #     else:
+    #         plot_same_plot(file_names=name_list[i], dst_min=element, ax_num = i, )
+    #     # plt.subplot_tool()
+    #     # plt.show()
+    #     plt.close()
     
 
     # #Baseline file name
@@ -713,7 +713,7 @@ if __name__ == '__main__':
     plt.close()
 
     # Full orbit plotter
-    full_orbit_plotter('quiet_days_sat_A')
+    full_orbit_plotter('Baseline_before_2018_08_sat_A')
     plt.close()
     full_orbit_plotter('2015_06_sat_C', storm=True)
     plt.close()

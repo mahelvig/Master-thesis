@@ -5,9 +5,9 @@ mass_hydrogen = 1
 mass_no = 14+16
 mass_o2 = 16*2
 
-density_o = 100
+density_o = 70
 density_h = 100 -density_o
-density_no= 50
+density_no= 0
 density_o2= 0
 
 mass    = {'hydrogen' :mass_oxygen,
