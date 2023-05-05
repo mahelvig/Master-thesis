@@ -312,19 +312,22 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
     end_timestamp   = dst_min + pd.Timedelta(days=delta_time)
 
     df_A_resampled, df_A_night_resampled, df_A_cond_day, df_A_cond_night, not_used, \
+        df_A_resampled_day_25, df_A_resampled_day_75, df_A_resampled_night_25, df_A_resampled_night_75,\
         = data_frame_creator(file_names[0], 
                             dst_min, start_timestamp, end_timestamp,
-                            dawn_dusk=(True if dawn_dusk else False),)
+                            dawn_dusk=(True if dawn_dusk else False),percentiles=True)
     
     df_B_resampled, df_B_night_resampled, df_B_cond_day, df_B_cond_night, not_used, \
+        df_B_resampled_day_25, df_B_resampled_day_75, df_B_resampled_night_25, df_B_resampled_night_75,\
         = data_frame_creator(file_names[1], 
                             dst_min, start_timestamp, end_timestamp,
-                            dawn_dusk = False,)
+                            dawn_dusk = False,percentiles=True)
 
     df_C_resampled, df_C_night_resampled, df_C_cond_day, df_C_cond_night, not_used, \
+        df_C_resampled_day_25, df_C_resampled_day_75, df_C_resampled_night_25, df_C_resampled_night_75,\
         = data_frame_creator(file_names[2], 
                             dst_min, start_timestamp, end_timestamp,
-                            dawn_dusk=(True if dawn_dusk else False),)
+                            dawn_dusk=(True if dawn_dusk else False),percentiles=True)
     
     mlt_A_day, mlt_B_day, mlt_C_day =   df_A_resampled['MLT'].mean(), \
                                         df_B_resampled['MLT'].mean(), \
@@ -333,11 +336,13 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
                                         df_B_night_resampled['MLT'].mean(), \
                                         df_C_night_resampled['MLT'].mean()
     
+
+    
     gap_A = check_time_gap(df_A_resampled)
     gap_B = check_time_gap(df_B_resampled)
     gap_C = check_time_gap(df_C_resampled)
     
-    # Plotting
+    # Plotting effective ion mass
     if gap_A:
         df_A_resampled_part1 = df_A_resampled[df_A_resampled['Timestamp'] <= dst_min]
         df_A_resampled_part2 = df_A_resampled[df_A_resampled['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)+ pd.Timedelta(hours=7)]
@@ -347,11 +352,34 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
         ax[0].plot(df_A_resampled_part2['Timestamp'],df_A_resampled_part2['M_i_eff'], marker = '*', color = 'tab:blue', )
         ax[1].plot(df_A_night_resampled_part1['Timestamp'],df_A_night_resampled_part1['M_i_eff'], marker = '*', color = 'tab:blue',  label = f'Swarm A MLT:{mlt_A_ngt:2.0f} {"(Duskside)" if dawn_dusk else ""}')
         ax[1].plot(df_A_night_resampled_part2['Timestamp'],df_A_night_resampled_part2['M_i_eff'], marker = '*', color = 'tab:blue', )
+        
+        df_A_resampled_day_25_part1 = df_A_resampled_day_25[df_A_resampled_day_25['Timestamp'] <= dst_min]
+        df_A_resampled_day_25_part2 = df_A_resampled_day_25[df_A_resampled_day_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_A_resampled_day_75_part1 = df_A_resampled_day_75[df_A_resampled_day_75['Timestamp'] <= dst_min]
+        df_A_resampled_day_75_part2 = df_A_resampled_day_75[df_A_resampled_day_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[0].plot(df_A_resampled_day_25_part1['Timestamp'],df_A_resampled_day_25_part1['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_A_resampled_day_25_part2['Timestamp'],df_A_resampled_day_25_part2['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_A_resampled_day_75_part1['Timestamp'],df_A_resampled_day_75_part1['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_A_resampled_day_75_part2['Timestamp'],df_A_resampled_day_75_part2['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+
+        df_A_resampled_night_25_part1 = df_A_resampled_night_25[df_A_resampled_night_25['Timestamp'] <= dst_min]
+        df_A_resampled_night_25_part2 = df_A_resampled_night_25[df_A_resampled_night_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_A_resampled_night_75_part1 = df_A_resampled_night_75[df_A_resampled_night_75['Timestamp'] <= dst_min]
+        df_A_resampled_night_75_part2 = df_A_resampled_night_75[df_A_resampled_night_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[1].plot(df_A_resampled_night_25_part1['Timestamp'],df_A_resampled_night_25_part1['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_A_resampled_night_25_part2['Timestamp'],df_A_resampled_night_25_part2['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_A_resampled_night_75_part1['Timestamp'],df_A_resampled_night_75_part1['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_A_resampled_night_75_part2['Timestamp'],df_A_resampled_night_75_part2['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
 
     else:
         ax[0].plot(df_A_resampled['Timestamp'],df_A_resampled['M_i_eff'], marker = '*', color = 'tab:blue',  label = f'Swarm A MLT:{mlt_A_day:2.0f} {"(Dawnside)" if dawn_dusk else ""}')
         ax[1].plot(df_A_night_resampled['Timestamp'],df_A_night_resampled['M_i_eff'], marker = '*', color = 'tab:blue',  label = f'Swarm A MLT:{mlt_A_ngt:2.0f} {"(Duskside)" if dawn_dusk else ""}')
+        ax[0].plot(df_A_resampled_day_25['Timestamp'],df_A_resampled_day_25['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_A_resampled_day_75['Timestamp'],df_A_resampled_day_75['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_A_resampled_night_25['Timestamp'],df_A_resampled_night_25['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_A_resampled_night_75['Timestamp'],df_A_resampled_night_75['M_i_eff'], color = 'tab:blue',  ls='--',linewidth =0.5,)
     
+
     if gap_B:
         df_B_resampled_part1 = df_B_resampled[df_B_resampled['Timestamp'] <= dst_min]
         df_B_resampled_part2 = df_B_resampled[df_B_resampled['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
@@ -361,9 +389,33 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
         ax[0].plot(df_B_resampled_part2['Timestamp'],df_B_resampled_part2['M_i_eff'], marker = '*', color = 'tab:red', )
         ax[1].plot(df_B_night_resampled_part1['Timestamp'],df_B_night_resampled_part1['M_i_eff'], marker = '*', color = 'tab:red',  label = f'Swarm B MLT:{mlt_B_ngt:2.0f}')
         ax[1].plot(df_B_night_resampled_part2['Timestamp'],df_B_night_resampled_part2['M_i_eff'], marker = '*', color = 'tab:red',)
+
+        df_B_resampled_day_25_part1 = df_B_resampled_day_25[df_B_resampled_day_25['Timestamp'] <= dst_min]
+        df_B_resampled_day_25_part2 = df_B_resampled_day_25[df_B_resampled_day_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_B_resampled_day_75_part1 = df_B_resampled_day_75[df_B_resampled_day_75['Timestamp'] <= dst_min]
+        df_B_resampled_day_75_part2 = df_B_resampled_day_75[df_B_resampled_day_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[0].plot(df_B_resampled_day_25_part1['Timestamp'],df_B_resampled_day_25_part1['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_B_resampled_day_25_part2['Timestamp'],df_B_resampled_day_25_part2['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_B_resampled_day_75_part1['Timestamp'],df_B_resampled_day_75_part1['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_B_resampled_day_75_part2['Timestamp'],df_B_resampled_day_75_part2['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+
+        df_B_resampled_night_25_part1 = df_B_resampled_night_25[df_B_resampled_night_25['Timestamp'] <= dst_min]
+        df_B_resampled_night_25_part2 = df_B_resampled_night_25[df_B_resampled_night_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_B_resampled_night_75_part1 = df_B_resampled_night_75[df_B_resampled_night_75['Timestamp'] <= dst_min]
+        df_B_resampled_night_75_part2 = df_B_resampled_night_75[df_B_resampled_night_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[1].plot(df_B_resampled_night_25_part1['Timestamp'],df_B_resampled_night_25_part1['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_B_resampled_night_25_part2['Timestamp'],df_B_resampled_night_25_part2['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_B_resampled_night_75_part1['Timestamp'],df_B_resampled_night_75_part1['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_B_resampled_night_75_part2['Timestamp'],df_B_resampled_night_75_part2['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+
+
     else:
         ax[0].plot(df_B_resampled['Timestamp'],df_B_resampled['M_i_eff'], marker = '*', color = 'tab:red',   label = f'Swarm B MLT:{mlt_B_day:2.0f} ')
         ax[1].plot(df_B_night_resampled['Timestamp'],df_B_night_resampled['M_i_eff'], marker = '*', color = 'tab:red',   label = f'Swarm B MLT:{mlt_B_ngt:2.0f} ')
+        ax[0].plot(df_B_resampled_day_25['Timestamp'],df_B_resampled_day_25['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_B_resampled_day_75['Timestamp'],df_B_resampled_day_75['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_B_resampled_night_25['Timestamp'],df_B_resampled_night_25['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_B_resampled_night_75['Timestamp'],df_B_resampled_night_75['M_i_eff'], color = 'tab:red',  ls='--',linewidth =0.5,)
     
     if gap_C:
         df_C_resampled_part1 = df_C_resampled[df_C_resampled['Timestamp'] <= dst_min]
@@ -374,25 +426,41 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
         ax[0].plot(df_C_resampled_part2['Timestamp'],df_C_resampled_part2['M_i_eff'], marker = '*', color = 'tab:green', )
         ax[1].plot(df_C_night_resampled_part1['Timestamp'],df_C_night_resampled_part1['M_i_eff'], marker = '*', color = 'tab:green',  label = f'Swarm C MLT:{mlt_C_ngt:2.0f} {"(Duskside)" if dawn_dusk else ""}')
         ax[1].plot(df_C_night_resampled_part2['Timestamp'],df_C_night_resampled_part2['M_i_eff'], marker = '*', color = 'tab:green',)
+
+        df_C_resampled_day_25_part1 = df_C_resampled_day_25[df_C_resampled_day_25['Timestamp'] <= dst_min]
+        df_C_resampled_day_25_part2 = df_C_resampled_day_25[df_C_resampled_day_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_C_resampled_day_75_part1 = df_C_resampled_day_75[df_C_resampled_day_75['Timestamp'] <= dst_min]
+        df_C_resampled_day_75_part2 = df_C_resampled_day_75[df_C_resampled_day_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[0].plot(df_C_resampled_day_25_part1['Timestamp'],df_C_resampled_day_25_part1['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_C_resampled_day_25_part2['Timestamp'],df_C_resampled_day_25_part2['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_C_resampled_day_75_part1['Timestamp'],df_C_resampled_day_75_part1['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_C_resampled_day_75_part2['Timestamp'],df_C_resampled_day_75_part2['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+
+        df_C_resampled_night_25_part1 = df_C_resampled_night_25[df_C_resampled_night_25['Timestamp'] <= dst_min]
+        df_C_resampled_night_25_part2 = df_C_resampled_night_25[df_C_resampled_night_25['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        df_C_resampled_night_75_part1 = df_C_resampled_night_75[df_C_resampled_night_75['Timestamp'] <= dst_min]
+        df_C_resampled_night_75_part2 = df_C_resampled_night_75[df_C_resampled_night_75['Timestamp'] >= dst_min+ pd.Timedelta(hours=7)]
+        ax[1].plot(df_C_resampled_night_25_part1['Timestamp'],df_C_resampled_night_25_part1['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_C_resampled_night_25_part2['Timestamp'],df_C_resampled_night_25_part2['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_C_resampled_night_75_part1['Timestamp'],df_C_resampled_night_75_part1['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_C_resampled_night_75_part2['Timestamp'],df_C_resampled_night_75_part2['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+
     else:
         ax[0].plot(df_C_resampled['Timestamp'],df_C_resampled['M_i_eff'], marker = '*', color = 'tab:green', label = f'Swarm C MLT:{mlt_C_day:2.0f} {"(Dawnside)" if dawn_dusk else ""}')
         ax[1].plot(df_C_night_resampled['Timestamp'],df_C_night_resampled['M_i_eff'], marker = '*', color = 'tab:green', label = f'Swarm C MLT:{mlt_C_ngt:2.0f} {"(Duskside)" if dawn_dusk else ""}')
-
-    #Plotting IRI 2016
-    # ax[(0,0)].plot(df_A_cond_day['Timestamp'],df_A_cond_day['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(1,0)].plot(df_B_cond_day['Timestamp'],df_B_cond_day['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(2,0)].plot(df_C_cond_day['Timestamp'],df_C_cond_day['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(0,1)].plot(df_A_cond_night['Timestamp'],df_A_cond_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(1,1)].plot(df_B_cond_night['Timestamp'],df_B_cond_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(2,1)].plot(df_C_cond_night['Timestamp'],df_C_cond_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
+        ax[0].plot(df_C_resampled_day_25['Timestamp'],df_C_resampled_day_25['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[0].plot(df_C_resampled_day_75['Timestamp'],df_C_resampled_day_75['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_C_resampled_night_25['Timestamp'],df_C_resampled_night_25['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
+        ax[1].plot(df_C_resampled_night_75['Timestamp'],df_C_resampled_night_75['M_i_eff'], color = 'tab:green',  ls='--',linewidth =0.5,)
 
     # #Plotting IRI 2016 all values
-    # ax[(0,0)].plot(df_A_2['Timestamp'],df_A_2['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(1,0)].plot(df_B_2['Timestamp'],df_B_2['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(2,0)].plot(df_C_2['Timestamp'],df_C_2['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(0,1)].plot(df_A_2_night['Timestamp'],df_A_2_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(1,1)].plot(df_B_2_night['Timestamp'],df_B_2_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
-    # ax[(2,1)].plot(df_C_2_night['Timestamp'],df_C_2_night['M_i_eff_tbt_model'], color = 'black', ls = '--', label = f'IRI 2016')
+    # ax[0].plot(df_A_resampled['Timestamp'],df_A_resampled['M_i_eff_tbt_model'], color = 'tab:blue', ls = '--', linewidth =1.5)
+    # ax[0].plot(df_B_resampled['Timestamp'],df_B_resampled['M_i_eff_tbt_model'], color = 'tab:red', ls = '--', linewidth =1.5)
+    # ax[0].plot(df_C_resampled['Timestamp'],df_C_resampled['M_i_eff_tbt_model'], color = 'tab:green', ls = '--', linewidth =1.5)
+    # ax[1].plot(df_A_night_resampled['Timestamp'],df_A_night_resampled['M_i_eff_tbt_model'], color = 'tab:blue', ls = '--', linewidth =1.5)
+    # ax[1].plot(df_B_night_resampled['Timestamp'],df_B_night_resampled['M_i_eff_tbt_model'], color = 'tab:red', ls = '--', linewidth =1.5)
+    # ax[1].plot(df_C_night_resampled['Timestamp'],df_C_night_resampled['M_i_eff_tbt_model'], color = 'tab:green', ls = '--', linewidth =1.5)
+
 
     storm_name = ['June 2015', 'December 2015', 'September 2017', 'August 2018']
     
@@ -401,7 +469,7 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
         
         ax[j].xaxis.set_minor_locator(ticker.AutoMinorLocator(4))
         ax[j].yaxis.set_minor_locator(ticker.AutoMinorLocator(5))
-        ax[j].legend(loc = 'best', )
+        ax[j].legend(loc = 'best', framealpha=1, ).set_zorder(10)
         ax[j].axhline(y = 16, color = 'black', ls = '--',linewidth=1)
         ax[j].axvline(x = dst_min, color = 'black', ls = '--',linewidth=1)
         ax[j].set_xlim(start_timestamp, end_timestamp)
@@ -415,6 +483,17 @@ def plot_same_plot(file_names, dst_min, ax_num, dawn_dusk = False, delta_time = 
     ax[0].set_ylabel(r'Effective Ion Mass [u]')
     ax[0].set_title(f'Dayside')
     ax[1].set_title(f'Nightside')
+
+        #Dst-plotter
+    dir_dst = 'storm_data/omni_data/'
+    file_names_dst = ['2015_June.txt','2015_December.txt','2017_September.txt','2018_August.txt']
+    from read_txt_omni import readfile
+    df,df2 = readfile(dir_dst+file_names_dst[ax_num])
+    ax3 = ax[1].twinx()
+    ax3.plot(df2.index, df2['SYM/H_INDEX']*-1, ls='solid',color='black',zorder=1)
+    ax3.set_yticklabels([])  
+    ax3.set_ylim(-100,400)  
+    ax3.axhline(y = 0, color = 'black', ls = '--',linewidth=1)
 
     
     plt.suptitle(f'Orbital Median of Effective Ion Mass during {storm_name[ax_num]} Storm ')
